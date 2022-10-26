@@ -122,7 +122,7 @@ export default class Engine {
             let sceneCoord = this.#getSceneMousePos()
             let cellInds = this.#dragging.model.userData.calcWorldCellInds(sceneCoord)
 
-            let isPermitted = this.#dragging.permittedCells.some(cell => (cell.x == cellInds.x) && (cell.y == cellInds.y))
+            let isPermitted = this.#dragging.permittedCells.some(cell => this.#isEqualCoord(cell, cellInds))
             if (isPermitted) {
                 this.#moveModel(this.#dragging.model, cellInds)
                 this.#dragging.dstCell = cellInds
@@ -160,16 +160,17 @@ export default class Engine {
         event.preventDefault()
 
         if (this.#pointer.drag) {
-            const dragModel = this.#dragging.model
+            const dragInst = this.#dragging
+            const dragModel = dragInst.model
 
             this.#selectTargetModels(dragModel, false)
 
             let indAnim = dragModel.userData.indAnimation
             if (indAnim !== undefined) this.#animations[indAnim].action.play()
 
-            if (this.#dragging.dstCell) {
-                let isRestPos = dragModel.userData.moveDweller(this.#dragging.srcCell, this.#dragging.dstCell)
-                if (isRestPos) this.#moveModel(dragModel, this.#dragging.srcCell)
+            if (dragInst.dstCell && !this.#isEqualCoord(dragInst.srcCell, dragInst.dstCell)) {
+                let isRestPos = dragModel.userData.moveDweller(dragInst.srcCell, dragInst.dstCell)
+                if (isRestPos) this.#moveModel(dragModel, dragInst.srcCell)
             }
 
             this.#dragging = { model: null, srcCell: null, dstCell: null, permittedCells: null }
@@ -298,6 +299,10 @@ export default class Engine {
         return srcObj && (cbAction(srcObj) !== false)
             ? this.#travelParents(srcObj.parent, cbAction)
             : srcObj
+    }
+
+    #isEqualCoord(coordA, coordB) {
+        return (coordA.x == coordB.x) && (coordA.y == coordB.y)
     }
 
 }
