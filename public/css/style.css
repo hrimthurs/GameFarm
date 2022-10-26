@@ -1,0 +1,96 @@
+html, body {
+    height: 100%;
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    font-family: Arial, Verdana, sans-serif;
+}
+
+#wrapper_render {
+    height: 100%;
+    width: 100%;
+
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: flex;
+
+    background-color: rgb(45, 45, 51);
+
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+}
+
+#render_contain {
+    height: 100%;
+    width: 100%;
+
+    position: relative;
+    user-select: none;
+
+    background-color: rgb(86, 86, 95);
+}
+
+#wrapper_menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    padding: 8px;
+}
+
+.menu_icon, .menu_icon_pressed {
+    display: inline-block;
+
+    width: 54px;
+    height: 54px;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    user-select: none;
+}
+
+.menu_icon_pressed {
+    cursor: pointer;
+}
+
+.menu_icon_pressed:hover {
+    transform: scale(1.2);
+}
+
+.menu_icon_pressed:active {
+    transform: scale(0.95);
+    opacity: 0.6;
+}
+
+#egg_icon {
+    background-image: url("../images/egg.png");
+}
+
+#milk_icon {
+    background-image: url("../images/milk.png");
+}
+
+#money_icon {
+    background-image: url("../images/money.png");
+}
+
+.menu_text {
+    display: inline-block;
+    position: relative;
+    left: -7px;
+    top: -5px;
+    margin-right: 10px;
+
+    font-family: 'Lato';
+    font-weight: 700;
+    font-size: 20px;
+
+    color: black;
+    user-select: none;
+}
