@@ -1,4 +1,4 @@
-# 🎮 Game Farm <sup style="font-size: small">v1.0.0</sup>
+# 🎮 Game Farm <sup style="font-size: small">v1.0.1</sup>
 
 ### [Play Game](https://portfolio.umbrael.com/content/pets/GameFarm/)
 ### [Public Build](./public/)

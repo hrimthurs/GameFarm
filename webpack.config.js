@@ -50,6 +50,9 @@ const cfgProd = {
                 output: {
                     comments: false
                 },
+                mangle: {
+                    reserved: [ 'Corn', 'Chicken', 'Cow' ]
+                },
                 compress: {
                     unsafe: true
                 }
