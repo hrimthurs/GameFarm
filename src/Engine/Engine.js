@@ -7,7 +7,6 @@ import { OrbitControls } from './systems/OrbitControls.js'
 
 import Graphics from './systems/Graphics.js'
 import SceneObjects from './systems/SceneObjects.js'
-import PageElements from './PageElements.js'
 
 export default class Engine {
 
@@ -59,7 +58,8 @@ export default class Engine {
                     this.navigator[key] = typeof val === 'object' ? SceneObjects.Vector3From(val) : val
                 }
 
-                PageElements.setDivResizeHandler(elRender, size => this.graphics.resizeRenderer(size))
+                this.#setResizeHandler(elRender, size => this.graphics.resizeRenderer(size))
+                
                 elRender.addEventListener('mousemove', event => this.#onMouseMove(event))
                 elRender.addEventListener('mousedown', event => this.#onMouseDown(event))
                 elRender.addEventListener('mouseup', event => this.#onMouseUp(event))
@@ -303,6 +303,34 @@ export default class Engine {
 
     #isEqualCoord(coordA, coordB) {
         return (coordA.x == coordB.x) && (coordA.y == coordB.y)
+    }
+
+    #setResizeHandler(elRender, handler) {
+        const elResizer = document.createElement('iframe')
+        elResizer.style.cssText = 'position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:-100'
+        elResizer.setAttribute('frameborder', 'no')
+        elRender.appendChild(elResizer)
+
+        let prevSize = {
+            width: null,
+            height: null
+        }
+
+        elResizer.contentWindow.addEventListener('resize', () => {
+            let { width, height } = getComputedStyle(elResizer)
+
+            let newSize = {
+                width: parseInt(width, 10) + 1,
+                height: parseInt(height, 10) + 1
+            }
+
+            if ((prevSize.width !== newSize.width) || (prevSize.height !== newSize.height)) {
+                handler(newSize)
+                prevSize = newSize
+            }
+        })
+
+        elResizer.contentWindow.dispatchEvent(new Event('resize'))
     }
 
 }

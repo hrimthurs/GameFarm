@@ -17,19 +17,32 @@ export default class Application {
             frame: () => this.world.update()
         })
 
-        document.querySelector('div #milk_icon').addEventListener('click', () => {
-            this.#sellProduct('div #milk_cnt', 'div #money_cnt', config.dwellers.Cow.options.sellPrice)
+        document.querySelector('img#milk_icon').addEventListener('click', () => {
+            this.#sellProduct('div#milk_cnt', 'div#money_cnt', config.dwellers.Cow.options.sellPrice)
         })
 
-        document.querySelector('div #egg_icon').addEventListener('click', () => {
-            this.#sellProduct('div #egg_cnt', 'div #money_cnt', config.dwellers.Chicken.options.sellPrice)
+        document.querySelector('img#egg_icon').addEventListener('click', () => {
+            this.#sellProduct('div#egg_cnt', 'div#money_cnt', config.dwellers.Chicken.options.sellPrice)
         })
     }
 
     async run() {
         await this.engine.loadAssets(self.location.href + 'assets/', config.assets, false)
         this.#createWorld()
-        this.engine.start()
+
+        const elBtnPlay = document.querySelector('div#button-play')
+        elBtnPlay.classList.add('button-play-mode')
+        elBtnPlay['innerText'] = 'PLAY'
+
+        elBtnPlay.addEventListener('click', () => {
+            const elRender = document.querySelector('div#wrapper_render')
+            elRender['style'].display = 'flex'
+
+            const elSplash = document.querySelector('div#splash-screen')
+            elSplash['style'].display = 'none'
+
+            this.engine.start()
+        })
     }
 
     #createWorld() {

@@ -7,7 +7,8 @@ export default class Graphics {
 
     #config = {
         renderer: {
-            alpha: false
+            alpha: true,
+            antialias: true
         },
 
         scene: {
@@ -41,11 +42,11 @@ export default class Graphics {
     constructor (elRender, config) {
         this.#config = TkObject.merge(this.#config, config)
 
-        this.renderer = new WebGLRenderer()
+        this.renderer = new WebGLRenderer(this.#config.renderer)
         this.renderer.outputEncoding = sRGBEncoding
         this.renderer.shadowMap.enabled = true
         this.renderer.shadowMap.type = PCFSoftShadowMap
-        
+
         elRender.appendChild(this.renderer.domElement)
 
         this.scene = SceneObjects.createScene(this.#config.scene)

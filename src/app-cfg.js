@@ -62,7 +62,7 @@ export default {
         Corn: {
             amount: 3,
             options: {
-                priceProduct: 10,
+                priceProduct: 10
             },
             model: {
                 nameProto: 'protoCorn'
@@ -74,7 +74,7 @@ export default {
             options: {
                 priceProduct: 10,
                 refillAdd: 30,
-                sellPrice: 20,
+                sellPrice: 20
             },
             model: {
                 nameProto: 'protoChicken',

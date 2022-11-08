@@ -1,4 +1,4 @@
-# 🎮 Game Farm <sup style="font-size: small">v1.0.2</sup>
+# 🎮 Game Farm <sup style="font-size: small">v1.1.0</sup>
 
 ### [Play Game](https://portfolio.umbrael.com/content/pets/GameFarm/)
 ### [Public Build](./public/)
@@ -6,13 +6,13 @@
 ---
 
 ## Controls
-- World Rotate - click and drag Mouse Left Button (`MLB`)
-- World Zoom - Mouse Wheel
+- World Rotate - drag mouse
+- World Zoom - rotate mouse wheel
 
 ## Actions
-+ 🐔 Dwellers Move - click and drag `MLB`
-+ 🌿 Feed animals - click `MLB` on Plant and drag to Animal
-+ 💰 Sell goods - click to icons on top menu
++ 🐔 Dwellers Move - drag Dweller with mouse
++ 🌿 Feed animals - drag Plant to Animal with mouse
++ 💰 Sell goods - click on the icons in the top menu
 
 ---
 

@@ -3,7 +3,10 @@ export default class World {
     #cells
 
     constructor ({ size }) {
-        this.#cells = new Array(size.x).fill(0).map(v => new Array(size.y).fill(0).map(v => ({ dweller: null, ground: null })))
+        this.#cells = new Array(size.x).fill(0).map(v => new Array(size.y).fill(0).map(v => ({
+            dweller: null,
+            ground: null
+        })))
     }
 
     getRandomEmptyPlace() {

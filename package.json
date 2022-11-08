@@ -1,11 +1,12 @@
 {
   "name": "application",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "live_dev": "start /min webpack serve",
-    "build_prod": "webpack --env entry=prod"
+    "build_prod": "node version && webpack --env entry=prod",
+    "version": "node version"
   },
   "author": "",
   "license": "ISC",

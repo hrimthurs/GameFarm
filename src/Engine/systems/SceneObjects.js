@@ -1,4 +1,4 @@
-import { Scene, Color, PerspectiveCamera, Group, Vector3, AxesHelper, GridHelper, CameraHelper, AmbientLight, DirectionalLight, DirectionalLightHelper, Mesh, RingGeometry, MeshPhongMaterial, SkinnedMesh } from 'three'
+import { Scene, PerspectiveCamera, Group, Vector3, AxesHelper, GridHelper, CameraHelper, AmbientLight, DirectionalLight, DirectionalLightHelper, Mesh, RingGeometry, MeshPhongMaterial, SkinnedMesh } from 'three'
 import { clone as totalClone } from './SkeletonUtils.js'
 
 export default class SceneObjects {
@@ -7,8 +7,6 @@ export default class SceneObjects {
 
     static createScene(options) {
         const scene = new Scene()
-        scene.background = new Color(options.background)
-
         return scene
     }
 
