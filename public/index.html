@@ -14,55 +14,59 @@
     <body>
 
         <div id="splash-screen">
+            <a href="https://github.com/hrimthurs/GameFarm.git" target="_blank">
+                <img id="github" src="./images/splash_screen/github.svg"/>
+            </a>
+
             <div id="splash-screen-content">
                 <table id="splash-screen-table" cellspacing="0" cellpadding="0">
                     <tr><td id="splash-screen-title" colspan="6">Game Farm</td></tr>
 
                     <tr><td class="record-header" colspan="6">Move Dwellers</td></tr>
                     <tr>
-                        <td><img src="./images/entities_icons/cow.png" class="entity-icon"/></td>
-                        <td><img src="./images/entities_icons/chicken.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/cow.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/chicken.png" class="entity-icon"/></td>
 
                         <td colspan="2">
-                            <img src="./images/splash_icons/arrow_tail.svg" class="arrow-icon"/>
-                            <img src="./images/splash_icons/mouse_left_button.svg" class="mouse-icon"/>
-                            <img src="./images/splash_icons/arrow_dot_right.svg" class="arrow-icon">
+                            <img src="./images/splash_screen/arrow_tail.svg" class="arrow-icon"/>
+                            <img src="./images/splash_screen/mouse_left_button.svg" class="mouse-icon"/>
+                            <img src="./images/splash_screen/arrow_dot_right.svg" class="arrow-icon">
                             <div class="mouse-text">DRAG</div>
                         </td>
 
-                        <td><img src="./images/entities_icons/empty.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/empty.png" class="entity-icon"/></td>
                         <td></td>
                     </tr>
 
                     <tr><td class="record-header" colspan="6">Feed Animals</td></tr>
                     <tr>
                         <td></td>
-                        <td><img src="./images/entities_icons/plant.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/plant.png" class="entity-icon"/></td>
 
                         <td colspan="2">
-                            <img src="./images/splash_icons/arrow_tail.svg" class="arrow-icon"/>
-                            <img src="./images/splash_icons/mouse_left_button.svg" class="mouse-icon"/>
-                            <img src="./images/splash_icons/arrow_dot_right.svg" class="arrow-icon">
+                            <img src="./images/splash_screen/arrow_tail.svg" class="arrow-icon"/>
+                            <img src="./images/splash_screen/mouse_left_button.svg" class="mouse-icon"/>
+                            <img src="./images/splash_screen/arrow_dot_right.svg" class="arrow-icon">
                             <div class="mouse-text">DRAG</div>
                         </td>
 
-                        <td><img src="./images/entities_icons/chicken.png" class="entity-icon"/></td>
-                        <td><img src="./images/entities_icons/cow.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/chicken.png" class="entity-icon"/></td>
+                        <td><img src="./images/splash_screen/entities/cow.png" class="entity-icon"/></td>
                     </tr>
 
                     <tr><td class="record-header" colspan="6">Sell Goods</td></tr>
                     <tr>
                         <td></td>
-                        <td><img src="./images/interface_icons/bucket.svg" class="entity-icon"/></td>
+                        <td><img src="./images/bucket.svg" class="entity-icon"/></td>
 
                         <td colspan="2">
-                            <img src="./images/splash_icons/arrow_left.svg" class="arrow-icon"/>
-                            <img src="./images/splash_icons/mouse_left_button.svg" class="mouse-icon"/>
-                            <img src="./images/splash_icons/arrow_right.svg" class="arrow-icon">
+                            <img src="./images/splash_screen/arrow_left.svg" class="arrow-icon"/>
+                            <img src="./images/splash_screen/mouse_left_button.svg" class="mouse-icon"/>
+                            <img src="./images/splash_screen/arrow_right.svg" class="arrow-icon">
                             <div class="mouse-text">CLICK</div>
                         </td>
 
-                        <td><img src="./images/interface_icons/egg.svg" class="entity-icon"/></td>
+                        <td><img src="./images/egg.svg" class="entity-icon"/></td>
                         <td></td>
                     </tr>
 
@@ -75,11 +79,11 @@
 
                     <tr>
                         <td colspan="3">
-                            <img src="./images/splash_icons/mouse_left_button.svg" class="mouse-icon"/>
+                            <img src="./images/splash_screen/mouse_left_button.svg" class="mouse-icon"/>
                             <div class="mouse-text">DRAG</div>
                         </td>
                         <td colspan="3">
-                            <img src="./images/splash_icons/mouse_wheel.svg" class="mouse-icon"/>
+                            <img src="./images/splash_screen/mouse_wheel.svg" class="mouse-icon"/>
                             <div class="mouse-text">WHEEL</div>
                         </td>
                     </tr>
@@ -95,20 +99,20 @@
 
         <div id="wrapper_render">
             <div id="wrapper_menu">
-                <img id="milk_icon" class="menu_icon_pressed" src="./images/interface_icons/bucket.svg"/>
+                <img id="milk_icon" class="menu_icon_pressed" src="./images/bucket.svg"/>
                 <div id="milk_cnt" class="menu_text" cnt="0">x0</div>
 
-                <img id="egg_icon" class="menu_icon_pressed" src="./images/interface_icons/egg.svg"/>
+                <img id="egg_icon" class="menu_icon_pressed" src="./images/egg.svg"/>
                 <div id="egg_cnt" class="menu_text" cnt="0">x0</div>
 
-                <img class="menu_icon" src="./images/interface_icons/money.svg"/>
+                <img class="menu_icon" src="./images/money.svg"/>
                 <div id="money_cnt" class="menu_text" cnt="0">x0</div>
             </div>
 
             <div id="render_contain"></div>
         </div>
 
-        <script src="build.js?v=1.1.0"></script>
+        <script src="build.js?v=1.1.1"></script>
 
     </body>
 

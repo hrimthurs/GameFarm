@@ -4,7 +4,9 @@ import Engine from './Engine/Engine.js'
 import SceneObjects from './Engine/systems/SceneObjects.js'
 
 import World from './modules/World.js'
-import { Corn, Chicken, Cow } from './modules/Entities.js'
+import Corn from './modules/Corn.js'
+import Chicken from './modules/Chicken.js'
+import Cow from './modules/Cow.js'
 
 export default class Application {
 
