@@ -32,9 +32,9 @@ export default class Engine {
 
     #dragging = {
         model: null,
-        srcCell: null,
-        dstCell: null,
-        permittedCells: null
+        srcTile: null,
+        dstTile: null,
+        permittedTiles: null
     }
 
     #v3_A = new Vector3()
@@ -59,7 +59,7 @@ export default class Engine {
                 }
 
                 this.#setResizeHandler(elRender, size => this.graphics.resizeRenderer(size))
-                
+
                 elRender.addEventListener('mousemove', event => this.#onMouseMove(event))
                 elRender.addEventListener('mousedown', event => this.#onMouseDown(event))
                 elRender.addEventListener('mouseup', event => this.#onMouseUp(event))
@@ -95,7 +95,7 @@ export default class Engine {
 
             document.body.style.cursor = this.#selectedMesh ? 'grab' : 'default'
 
-            const delta = this.#clock.getDelta()
+            let delta = this.#clock.getDelta()
             this.#animations.forEach(rec => rec.mixer.update(delta))
 
             this.navigator.update()
@@ -120,12 +120,12 @@ export default class Engine {
 
         if (this.#pointer.drag) {
             let sceneCoord = this.#getSceneMousePos()
-            let cellInds = this.#dragging.model.userData.calcWorldCellInds(sceneCoord)
+            let tileInds = this.#dragging.model.userData.calcTileInds(sceneCoord)
 
-            let isPermitted = this.#dragging.permittedCells.some(cell => this.#isEqualCoord(cell, cellInds))
+            let isPermitted = this.#dragging.permittedTiles.some(tile => this.#isEqualCoord(tile, tileInds))
             if (isPermitted) {
-                this.#moveModel(this.#dragging.model, cellInds)
-                this.#dragging.dstCell = cellInds
+                this.#moveModel(this.#dragging.model, tileInds)
+                this.#dragging.dstTile = tileInds
             }
         }
     }
@@ -137,16 +137,16 @@ export default class Engine {
         this.#pointer.drag = this.#selectedMesh != null
 
         if (this.#pointer.drag) {
-            const dragModel = this.#dragging.model = this.#travelParents(this.#selectedMesh.parent, obj => !obj.userData.getPermittedCells)
+            const dragModel = this.#dragging.model = this.#travelParents(this.#selectedMesh.parent, obj => !obj.userData.getPermittedTiles)
 
-            this.#dragging.srcCell = dragModel.userData.calcWorldCellInds({
+            this.#dragging.srcTile = dragModel.userData.calcTileInds({
                 x: dragModel.position.x,
                 y: dragModel.position.y
             })
 
-            this.#dragging.permittedCells = [
-                this.#dragging.srcCell,
-                ...dragModel.userData.getPermittedCells()
+            this.#dragging.permittedTiles = [
+                this.#dragging.srcTile,
+                ...dragModel.userData.getPermittedTiles()
             ]
 
             this.#selectTargetModels(dragModel, true, [this.#selectedMesh.uuid])
@@ -168,12 +168,12 @@ export default class Engine {
             let indAnim = dragModel.userData.indAnimation
             if (indAnim !== undefined) this.#animations[indAnim].action.play()
 
-            if (dragInst.dstCell && !this.#isEqualCoord(dragInst.srcCell, dragInst.dstCell)) {
-                let isRestPos = dragModel.userData.moveDweller(dragInst.srcCell, dragInst.dstCell)
-                if (isRestPos) this.#moveModel(dragModel, dragInst.srcCell)
+            if (dragInst.dstTile && !this.#isEqualCoord(dragInst.srcTile, dragInst.dstTile)) {
+                let isRestPos = dragModel.userData.moveDweller(dragInst.srcTile, dragInst.dstTile)
+                if (isRestPos) this.#moveModel(dragModel, dragInst.srcTile)
             }
 
-            this.#dragging = { model: null, srcCell: null, dstCell: null, permittedCells: null }
+            this.#dragging = { model: null, srcTile: null, dstTile: null, permittedTiles: null }
         }
 
         this.#pointer.leftButton = false
@@ -195,8 +195,8 @@ export default class Engine {
         }
     }
 
-    #moveModel(model, cellInds) {
-        let pivot = model.userData.calcWorldCellPivot(cellInds)
+    #moveModel(model, tileInds) {
+        let pivot = model.userData.calcTilePivot(tileInds)
         model.position.setX(pivot.x)
         model.position.setY(pivot.y)
     }
@@ -204,16 +204,16 @@ export default class Engine {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     async loadAssets(baseUrl, assets, visible = true) {
-        const dracoLoader = new DRACOLoader()
+        let dracoLoader = new DRACOLoader()
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
 
-        const loader = new GLTFLoader()
+        let loader = new GLTFLoader()
         loader.setDRACOLoader(dracoLoader)
 
         for (const name in assets) {
             await new Promise(resolve => {
                 loader.load(baseUrl + assets[name], gltf => {
-                    const model = gltf.scene
+                    let model = gltf.scene
 
                     model.name = name
                     model.visible = visible
@@ -243,8 +243,8 @@ export default class Engine {
     runAnimation(sceneObj, animName) {
         let clip = sceneObj.userData.animClips.find(rec => rec.name === animName)
         if (clip) {
-            const mixer = new AnimationMixer(sceneObj)
-            const action = mixer.clipAction(AnimationClip.parse(clip)).play()
+            let mixer = new AnimationMixer(sceneObj)
+            let action = mixer.clipAction(AnimationClip.parse(clip)).play()
 
             mixer.timeScale = 0.75 + (Math.random() / 2)
             sceneObj.userData.indAnimation = this.#animations.length
@@ -261,14 +261,14 @@ export default class Engine {
             outerRadius: radius
         }
 
-        const objBack = SceneObjects.createRing({
+        let objBack = SceneObjects.createRing({
             ...base,
             color: '#000',
             name: 'back_indicator',
             position, opacity
         })
 
-        const objFace = SceneObjects.createRing({
+        let objFace = SceneObjects.createRing({
             ...base,
             color,
             name: 'face_indicator',
@@ -279,7 +279,7 @@ export default class Engine {
 
         this.#lookAtCamera.push(objBack, objFace)
 
-        const indicator = SceneObjects.createGroup({ name: 'indicator' }, [objBack, objFace], parent)
+        let indicator = SceneObjects.createGroup({ name: 'indicator' }, [objBack, objFace], parent)
         indicator.userData.options = { ...base }
         indicator.visible = false
 
@@ -288,7 +288,7 @@ export default class Engine {
 
     #selectTargetModels(baseModel, select, excludeUuid = []) {
         const setEmissive = select ? '#055' : 0
-        const models = baseModel.userData.getCellsModels(this.#dragging.permittedCells)
+        let models = baseModel.userData.getTilesModels(this.#dragging.permittedTiles)
 
         models.forEach(model => SceneObjects.traverseMeshes(model, mesh => {
             if (!excludeUuid.includes(mesh.uuid)) mesh.material.emissive.set(setEmissive)

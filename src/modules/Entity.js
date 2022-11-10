@@ -9,7 +9,7 @@ export default class Entity {
     #priceProduct
     #limProduct
 
-    #getPermittedCells
+    #getPermittedTiles
     #moveDweller
 
     #tmrPrev
@@ -20,19 +20,19 @@ export default class Entity {
         progress: 0
     }
 
-    constructor ({ priceProduct, limProduct, indicator, model, getPermittedCells, moveDweller, resource }) {
+    constructor ({ priceProduct, limProduct, indicator, model, getPermittedTiles, moveDweller, resource }) {
         this.#priceProduct = priceProduct
         this.#limProduct = limProduct
 
-        this.#getPermittedCells = getPermittedCells
+        this.#getPermittedTiles = getPermittedTiles
         this.#moveDweller = moveDweller
 
         this.indicator = indicator
         this.model = model
         this.resource = resource
 
-        this.model.userData.getPermittedCells = () => this.getPermittedCells()
-        this.model.userData.moveDweller = (srcCell, dstCell) => this.moveDweller(srcCell, dstCell)
+        this.model.userData.getPermittedTiles = () => this.getPermittedTiles()
+        this.model.userData.moveDweller = (srcTile, dstTile) => this.moveDweller(srcTile, dstTile)
 
         this.#faceIndicator = this.indicator.getObjectByName('face_indicator')
         this.indicator.userData.options.color = this.#faceIndicator.material.color
@@ -43,10 +43,10 @@ export default class Entity {
         if (products.ready < this.#limProduct) {
 
             if (this.resource > 0) {
-                const now = Date.now()
+                let now = Date.now()
 
                 if (this.#tmrPrev) {
-                    const delta = (now - this.#tmrPrev) / 1000
+                    let delta = (now - this.#tmrPrev) / 1000
 
                     this.resource -= delta
                     if (this.resource < 0) this.resource = 0
@@ -68,12 +68,12 @@ export default class Entity {
         } else this.#tmrPrev = null
     }
 
-    getPermittedCells(permitClassNames = []) {
-        return this.#getPermittedCells(permitClassNames)
+    getPermittedTiles(permitClassNames = []) {
+        return this.#getPermittedTiles(permitClassNames)
     }
 
-    moveDweller(srcCell, dstCell) {
-        this.#moveDweller(srcCell, dstCell)
+    moveDweller(srcTile, dstTile) {
+        this.#moveDweller(srcTile, dstTile)
     }
 
     actionProductPause() {
@@ -83,7 +83,7 @@ export default class Entity {
 
     actionProductMake() {
         const options = this.indicator.userData.options
-        const length = 2 * Math.PI * this.products.progress
+        let length = 2 * Math.PI * this.products.progress
 
         this.#faceIndicator.geometry = new RingGeometry(options.innerRadius, options.outerRadius, options.segments, null, null, length)
         this.#faceIndicator.material.color = options.color

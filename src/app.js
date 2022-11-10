@@ -29,7 +29,7 @@ export default class Application {
     }
 
     async run() {
-        await this.engine.loadAssets(self.location.href + 'assets/', config.assets, false)
+        await this.engine.loadAssets(self.location.href, config.assets, false)
         this.#createWorld()
 
         const elBtnPlay = document.querySelector('div#button-play')
@@ -51,7 +51,7 @@ export default class Application {
         const dwellerClasses = { Corn, Chicken, Cow }
 
         this.world = new World(config.world)
-        this.world.travelCells((cell, coord) => this.#createGround(cell, coord))
+        this.world.travelTiles((tile, coord) => this.#createGround(tile, coord))
 
         for (const typeDweller in config.dwellers) {
             const recDweller = config.dwellers[typeDweller]
@@ -59,59 +59,59 @@ export default class Application {
             this.#createDweller({
                 dwellerClass: dwellerClasses[typeDweller],
                 amount: recDweller.amount,
-                modelProto: recDweller.model,
+                asset: recDweller.asset,
                 options: recDweller.options
             })
         }
     }
 
-    #createGround(cell, coord) {
+    #createGround(tile, coord) {
         const rotateFactor = [0, 1/2, 1, 3/2]
 
-        const model = SceneObjects.instance({
-            protoObj: this.engine.graphics.scene.getObjectByName('protoEmpty'),
-            position: this.#calcWorldCellPivot(coord),
+        let model = SceneObjects.instance({
+            protoObj: this.engine.graphics.scene.getObjectByName('ground'),
+            position: this.world.calcTilePivot(coord),
             rotation: { z: Math.PI * rotateFactor[Math.floor(Math.random() * 4)] },
             selectable: false,
             shadow: { cast: false, receive: true }
         })
 
         this.engine.graphics.scene.add(model)
-        cell.ground = { model }
+        tile.ground = { model }
     }
 
-    #createDweller({ dwellerClass, amount, modelProto, options }) {
+    #createDweller({ dwellerClass, amount, asset, options }) {
         for (let cnt = 0; cnt < amount; cnt++) {
 
-            let coord = this.world.getRandomEmptyPlace()
+            let coord = this.world.getRandomEmptyTile()
             if (coord) {
 
-                const model = SceneObjects.instance({
-                    protoObj: this.engine.graphics.scene.getObjectByName(modelProto.nameProto),
-                    position: this.#calcWorldCellPivot(coord),
+                let model = SceneObjects.instance({
+                    protoObj: this.engine.graphics.scene.getObjectByName(asset.name),
+                    position: this.world.calcTilePivot(coord),
                     rotation: { z: Math.PI * Math.random() },
                     shadow: { cast: true, receive: false },
                     userData: {
-                        calcWorldCellPivot: coord => this.#calcWorldCellPivot(coord),
-                        calcWorldCellInds: coord => this.#calcWorldCellInds(coord),
-                        getCellsModels: cells => this.#getCellsModels(cells)
+                        calcTilePivot: coord => this.world.calcTilePivot(coord),
+                        calcTileInds: coord => this.world.calcTileInds(coord),
+                        getTilesModels: tiles => this.#getTilesModels(tiles)
                     }
                 })
 
                 this.engine.graphics.scene.add(model)
-                if (modelProto.animation) this.engine.runAnimation(model, modelProto.animation)
+                if (asset.animation) this.engine.runAnimation(model, asset.animation)
 
-                const indicator = this.engine.createIndicator({
+                let indicator = this.engine.createIndicator({
                     ...config.indicator,
                     position: { z: config.indicator.top },
                     parent: model
                 })
 
-                const dweller = new dwellerClass({
+                let dweller = new dwellerClass({
                     ...options,
                     indicator, model,
 
-                    getPermittedCells: (...args) => this.world.getEmptyPlaces(...args),
+                    getPermittedTiles: (...args) => this.world.getEmptyTiles(...args),
                     moveDweller: (...args) => this.world.moveDweller(...args),
                     getDweller: (...args) => this.world.getDweller(...args)
                 })
@@ -121,29 +121,9 @@ export default class Application {
         }
     }
 
-    #calcWorldCellPivot(coord) {
-        const sizeField = config.world.sizeField
-        const halfSizeField = sizeField / 2
-
-        return {
-            x: (-config.world.size.x * halfSizeField) + halfSizeField + (coord.x * sizeField),
-            y: (-config.world.size.y * halfSizeField) + halfSizeField + (coord.y * sizeField)
-        }
-    }
-
-    #calcWorldCellInds(coord) {
-        const sizeField = config.world.sizeField
-        const halfSizeField = sizeField / 2
-
-        return {
-            x: Math.trunc((coord.x + (config.world.size.x * halfSizeField)) / sizeField),
-            y: Math.trunc((coord.y + (config.world.size.y * halfSizeField)) / sizeField)
-        }
-    }
-
-    #getCellsModels(cells) {
-        return cells
-            .map(coord => this.world.getCellModels(coord))
+    #getTilesModels(tiles) {
+        return tiles
+            .map(coord => this.world.getTileModels(coord))
             .flat()
             .filter(rec => rec)
     }

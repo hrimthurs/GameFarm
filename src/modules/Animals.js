@@ -4,12 +4,12 @@ export default class Animals extends Entity {
 
     #refillAdd
 
-    constructor ({ priceProduct, indicator, model, getPermittedCells, moveDweller, refillAdd }) {
+    constructor ({ priceProduct, indicator, model, getPermittedTiles, moveDweller, refillAdd }) {
         super({
             priceProduct,
             indicator,
             model,
-            getPermittedCells,
+            getPermittedTiles,
             moveDweller,
             limProduct: Infinity,
             resource: 0

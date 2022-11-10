@@ -4,12 +4,12 @@ export default class Cow extends Animals {
 
     #elProductsReady
 
-    constructor ({ priceProduct, indicator, model, getPermittedCells, moveDweller, refillAdd }) {
+    constructor ({ priceProduct, indicator, model, getPermittedTiles, moveDweller, refillAdd }) {
         super({
             priceProduct,
             indicator,
             model,
-            getPermittedCells,
+            getPermittedTiles,
             moveDweller,
             refillAdd
         })
