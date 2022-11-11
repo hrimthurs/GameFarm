@@ -104,14 +104,14 @@ export default class SceneObjects {
 
     // ROUTINES
 
-    static instance({ srcObj, position, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
-        let obj = totalClone(srcObj)
+    static instance({ sceneObj, position, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
+        let obj = totalClone(sceneObj)
 
         obj.position.copy(this.Vector3From(position))
         obj.rotation.setFromVector3(this.Vector3From(rotation))
         obj.scale.copy(this.Vector3From(scale))
 
-        obj.name = srcObj.name + '_instance'
+        obj.name = sceneObj.name + '_instance'
         obj.visible = true
         obj.userData = { ...obj.userData, ...userData }
 

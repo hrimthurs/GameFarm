@@ -57,13 +57,13 @@ export default class Application {
 
         this.world.travelTiles((tile, coord) => this.#createGround({
             tile, coord,
-            srcObj: assets.ground
+            sceneObj: assets.ground
         }))
 
         this.#createHome({
             coord: { x: 0, y: 0 },
             size: { x: 3, y: 3 },
-            srcObj: assets.home
+            sceneObj: assets.home
         })
 
         for (const typeDweller in config.dwellers) {
@@ -72,18 +72,18 @@ export default class Application {
             this.#createDweller({
                 dwellerClass: dwellerClasses[typeDweller],
                 amount: recDweller.amount,
-                srcObj: assets[recDweller.asset.name],
+                sceneObj: assets[recDweller.asset.name],
                 animation: recDweller.asset.animation,
                 options: recDweller.options
             })
         }
     }
 
-    #createGround({ tile, coord, srcObj }) {
+    #createGround({ tile, coord, sceneObj }) {
         const rotateFactor = [0, 1/2, 1, 3/2]
 
         let model = SceneObjects.instance({
-            srcObj,
+            sceneObj,
             position: this.world.calcTilePivot(coord),
             rotation: { z: Math.PI * rotateFactor[Math.floor(Math.random() * 4)] },
             selectable: false,
@@ -94,9 +94,9 @@ export default class Application {
         tile.ground = { model }
     }
 
-    #createHome({ coord, size, srcObj }) {
+    #createHome({ coord, size, sceneObj }) {
         SceneObjects.instance({
-            srcObj,
+            sceneObj,
             position: this.world.calcTilePivot(coord),
             selectable: false,
             shadow: { cast: true, receive: true },
@@ -106,14 +106,14 @@ export default class Application {
         this.world.setEnviron({ coord, size })
     }
 
-    #createDweller({ dwellerClass, amount, srcObj, animation = null, options }) {
+    #createDweller({ dwellerClass, amount, sceneObj, animation = null, options }) {
         for (let cnt = 0; cnt < amount; cnt++) {
 
             let coord = this.world.getRandomEmptyTile()
             if (coord) {
 
                 let model = SceneObjects.instance({
-                    srcObj,
+                    sceneObj,
                     position: this.world.calcTilePivot(coord),
                     rotation: { z: Math.PI * Math.random() },
                     shadow: { cast: true, receive: false },
