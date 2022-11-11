@@ -51,7 +51,28 @@ export default class Application {
     }
 
     #createWorld(assets) {
-        const dwellerClasses = { Corn, Chicken, Cow }
+        const halfSizeTile = config.world.sizeTile / 2
+        const halfSizeX = (config.world.sizeWorld.x + 2) * halfSizeTile
+        const halfSizeY = (config.world.sizeWorld.y + 2) * halfSizeTile
+
+        SceneObjects.createDirLight({
+            type: 'dirLight',
+            position: {
+                x: halfSizeX + 7,
+                y: -halfSizeX - 7,
+                z: 50
+            },
+            shadow: {
+                normalBias: 0.07,
+                camera: {
+                    top: halfSizeY,
+                    right: halfSizeX,
+                    bottom: -halfSizeY,
+                    left: -halfSizeX
+                }
+            },
+            parent: this.engine.graphics.scene
+        })
 
         this.world = new World(config.world)
 
@@ -65,6 +86,8 @@ export default class Application {
             size: { x: 3, y: 3 },
             sceneObj: assets.home
         })
+
+        const dwellerClasses = { Corn, Chicken, Cow }
 
         for (const typeDweller in config.dwellers) {
             const recDweller = config.dwellers[typeDweller]

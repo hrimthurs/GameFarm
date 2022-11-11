@@ -49,7 +49,7 @@ export default class Graphics {
 
         elRender.appendChild(this.renderer.domElement)
 
-        this.scene = SceneObjects.createScene(this.#config.scene)
+        this.scene = SceneObjects.createScene()
         this.camera = SceneObjects.createCamera(this.#config.camera, this.scene)
     }
 

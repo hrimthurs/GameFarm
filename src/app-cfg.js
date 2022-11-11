@@ -31,18 +31,9 @@ export default {
         },
 
         sceneObjects: [
-            // { type: 'axes', size: 10, position: { z: 0.05 } },
+            // { type: 'axes', size: 20, position: { z: 0.05 } },
             // { type: 'grid', size: 20, div: 12, rotation: { x: Math.PI / 2 } },
-            {
-                type: 'ambLight',
-                intensity: 0.4
-            },
-            {
-                type: 'dirLight',
-                castShadow: true,
-                helper: false,
-                position: { x: 5, y: -5, z: 12 }
-            }
+            { type: 'ambLight', intensity: 0.4 }
         ]
     },
 

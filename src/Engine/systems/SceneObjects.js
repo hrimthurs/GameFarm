@@ -70,8 +70,22 @@ export default class SceneObjects {
         let dirLight = new DirectionalLight(options.color, options.intensity)
         this.setBaseParams(dirLight, options)
 
-        dirLight.castShadow = options.castShadow === true
+        if (options.shadow) {
+            dirLight.castShadow = true
+            dirLight.shadow.normalBias = options.shadow.normalBias ?? 0
 
+            const setShadowCamera = options.shadow.camera
+            if (setShadowCamera) {
+                dirLight.shadow.camera.near = setShadowCamera.near ?? 0.5
+                dirLight.shadow.camera.far = setShadowCamera.far ?? 500
+                dirLight.shadow.camera.top = setShadowCamera.top ?? 5
+                dirLight.shadow.camera.right = setShadowCamera.right ?? 5
+                dirLight.shadow.camera.bottom = setShadowCamera.bottom ?? -5
+                dirLight.shadow.camera.left = setShadowCamera.left ?? -5
+            }
+        }
+
+        parent = parent ?? options.parent
         if (parent) {
             parent.add(dirLight)
 
@@ -104,16 +118,15 @@ export default class SceneObjects {
 
     // ROUTINES
 
-    static instance({ sceneObj, position, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
+    static instance({ sceneObj, position = {}, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
         let obj = totalClone(sceneObj)
-
-        obj.position.copy(this.Vector3From(position))
-        obj.rotation.setFromVector3(this.Vector3From(rotation))
-        obj.scale.copy(this.Vector3From(scale))
-
-        obj.name = sceneObj.name + '_instance'
         obj.visible = true
         obj.userData = { ...obj.userData, ...userData }
+
+        this.setBaseParams(obj, {
+            name: sceneObj.name + '_instance',
+            position, rotation, scale
+        })
 
         this.traverseMeshes(obj, mesh => {
             mesh.frustumCulled = false
@@ -138,7 +151,7 @@ export default class SceneObjects {
     }
 
     static setBaseParams(obj, options) {
-        obj.name = options.name || ''
+        obj.name = options.name ?? ''
         obj.position.copy(this.Vector3From(options.position))
         obj.rotation.setFromVector3(this.Vector3From(options.rotation))
         obj.scale.copy(this.Vector3From(options.scale, [1, 1, 1]))
