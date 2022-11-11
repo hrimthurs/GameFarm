@@ -18,7 +18,21 @@ export default class Application {
             config: config.engine,
             frame: () => this.world.update()
         })
+    }
 
+    async run(waitPressPlay = true) {
+        let assets = await this.engine.loadAssets(self.location.href, config.assets)
+        this.#createWorld(assets)
+
+        if (waitPressPlay) {
+            const elBtnPlay = document.querySelector('div#button-play')
+            elBtnPlay.classList.add('button-play-mode')
+            elBtnPlay['innerText'] = 'PLAY'
+            elBtnPlay.addEventListener('click', () => this.#startGame())
+        } else this.#startGame()
+    }
+
+    #startGame() {
         document.querySelector('img#milk_icon').addEventListener('click', () => {
             this.#sellProduct('div#milk_cnt', 'div#money_cnt', config.dwellers.Cow.options.sellPrice)
         })
@@ -26,32 +40,31 @@ export default class Application {
         document.querySelector('img#egg_icon').addEventListener('click', () => {
             this.#sellProduct('div#egg_cnt', 'div#money_cnt', config.dwellers.Chicken.options.sellPrice)
         })
+
+        const elRender = document.querySelector('div#wrapper_render')
+        elRender['style'].display = 'flex'
+
+        const elSplash = document.querySelector('div#splash-screen')
+        elSplash['style'].display = 'none'
+
+        this.engine.start()
     }
 
-    async run() {
-        await this.engine.loadAssets(self.location.href, config.assets, false)
-        this.#createWorld()
-
-        const elBtnPlay = document.querySelector('div#button-play')
-        elBtnPlay.classList.add('button-play-mode')
-        elBtnPlay['innerText'] = 'PLAY'
-
-        elBtnPlay.addEventListener('click', () => {
-            const elRender = document.querySelector('div#wrapper_render')
-            elRender['style'].display = 'flex'
-
-            const elSplash = document.querySelector('div#splash-screen')
-            elSplash['style'].display = 'none'
-
-            this.engine.start()
-        })
-    }
-
-    #createWorld() {
+    #createWorld(assets) {
         const dwellerClasses = { Corn, Chicken, Cow }
 
         this.world = new World(config.world)
-        this.world.travelTiles((tile, coord) => this.#createGround(tile, coord))
+
+        this.world.travelTiles((tile, coord) => this.#createGround({
+            tile, coord,
+            srcObj: assets.ground
+        }))
+
+        this.#createHome({
+            coord: { x: 0, y: 0 },
+            size: { x: 3, y: 3 },
+            srcObj: assets.home
+        })
 
         for (const typeDweller in config.dwellers) {
             const recDweller = config.dwellers[typeDweller]
@@ -59,38 +72,52 @@ export default class Application {
             this.#createDweller({
                 dwellerClass: dwellerClasses[typeDweller],
                 amount: recDweller.amount,
-                asset: recDweller.asset,
+                srcObj: assets[recDweller.asset.name],
+                animation: recDweller.asset.animation,
                 options: recDweller.options
             })
         }
     }
 
-    #createGround(tile, coord) {
+    #createGround({ tile, coord, srcObj }) {
         const rotateFactor = [0, 1/2, 1, 3/2]
 
         let model = SceneObjects.instance({
-            protoObj: this.engine.graphics.scene.getObjectByName('ground'),
+            srcObj,
             position: this.world.calcTilePivot(coord),
             rotation: { z: Math.PI * rotateFactor[Math.floor(Math.random() * 4)] },
             selectable: false,
-            shadow: { cast: false, receive: true }
+            shadow: { cast: false, receive: true },
+            parent: this.engine.graphics.scene
         })
 
-        this.engine.graphics.scene.add(model)
         tile.ground = { model }
     }
 
-    #createDweller({ dwellerClass, amount, asset, options }) {
+    #createHome({ coord, size, srcObj }) {
+        SceneObjects.instance({
+            srcObj,
+            position: this.world.calcTilePivot(coord),
+            selectable: false,
+            shadow: { cast: true, receive: true },
+            parent: this.engine.graphics.scene
+        })
+
+        this.world.setEnviron({ coord, size })
+    }
+
+    #createDweller({ dwellerClass, amount, srcObj, animation = null, options }) {
         for (let cnt = 0; cnt < amount; cnt++) {
 
             let coord = this.world.getRandomEmptyTile()
             if (coord) {
 
                 let model = SceneObjects.instance({
-                    protoObj: this.engine.graphics.scene.getObjectByName(asset.name),
+                    srcObj,
                     position: this.world.calcTilePivot(coord),
                     rotation: { z: Math.PI * Math.random() },
                     shadow: { cast: true, receive: false },
+                    parent: this.engine.graphics.scene,
                     userData: {
                         calcTilePivot: coord => this.world.calcTilePivot(coord),
                         calcTileInds: coord => this.world.calcTileInds(coord),
@@ -98,8 +125,7 @@ export default class Application {
                     }
                 })
 
-                this.engine.graphics.scene.add(model)
-                if (asset.animation) this.engine.runAnimation(model, asset.animation)
+                if (animation) this.engine.runAnimation(model, animation)
 
                 let indicator = this.engine.createIndicator({
                     ...config.indicator,

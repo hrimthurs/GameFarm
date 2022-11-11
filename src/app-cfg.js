@@ -50,7 +50,8 @@ export default {
         ground: 'assets/ground.glb',
         corn: 'assets/corn.glb',
         chicken: 'assets/chicken.glb',
-        cow: 'assets/cow.glb'
+        cow: 'assets/cow.glb',
+        home: 'assets/home.glb'
     },
 
     indicator: {

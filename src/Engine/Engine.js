@@ -1,6 +1,6 @@
 ﻿import { TkObject } from '@hrimthurs/tackle'
 
-import { Clock, AnimationMixer, AnimationClip, Raycaster, Vector2, SkinnedMesh, Matrix4, Vector3 } from 'three'
+import { Clock, AnimationMixer, AnimationClip, Raycaster, Vector2, Vector3 } from 'three'
 import { GLTFLoader } from './systems/GLTFLoader.js'
 import { DRACOLoader } from './systems/DRACOLoader.js'
 import { OrbitControls } from './systems/OrbitControls.js'
@@ -25,10 +25,10 @@ export default class Engine {
     #pointer = {
         leftButton: false,
         drag: false,
-        pos: new Vector2()
+        pos: null
     }
 
-    #selectedMesh
+    #selectedMesh = null
 
     #dragging = {
         model: null,
@@ -79,12 +79,17 @@ export default class Engine {
             this.#frame()
             this.#lookAtCamera.forEach(obj => obj.lookAt(this.graphics.camera.position))
 
-            if (!this.#pointer.drag && !this.#pointer.leftButton) {
-                this.#raycaster.setFromCamera(this.#pointer.pos, this.graphics.camera)
+            const pointer = this.#pointer
+            if (!pointer.drag && !pointer.leftButton && pointer.pos) {
+                this.#raycaster.setFromCamera(pointer.pos, this.graphics.camera)
 
-                let selectObject = this.#raycaster
+                let firstIntersect = this.#raycaster
                     .intersectObjects(this.graphics.scene.children)
-                    .find(intersect => intersect.object.userData.selectable)?.object
+                    .find(intersect => intersect.object.userData.selectable != null)
+
+                let selectObject = firstIntersect?.object.userData.selectable === true
+                    ? firstIntersect.object
+                    : null
 
                 if (selectObject !== this.#selectedMesh) {
                     this.#selectedMesh?.material.emissive.set(0)
@@ -112,6 +117,7 @@ export default class Engine {
 
         const rect = this.graphics.clientRect
         if (rect) {
+            if (!this.#pointer.pos) this.#pointer.pos = new Vector2()
             this.#pointer.pos.x = 2 * (event.clientX - rect.left) / rect.width - 1
             this.#pointer.pos.y = -2 * (event.clientY - rect.top) / rect.height + 1
         }
@@ -176,6 +182,7 @@ export default class Engine {
             this.#dragging = { model: null, srcTile: null, dstTile: null, permittedTiles: null }
         }
 
+        this.#selectedMesh = null
         this.#pointer.leftButton = false
         this.#pointer.drag = false
     }
@@ -203,7 +210,9 @@ export default class Engine {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    async loadAssets(baseUrl, assets, visible = true) {
+    async loadAssets(baseUrl, assets) {
+        let res = {}
+
         let dracoLoader = new DRACOLoader()
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
 
@@ -211,33 +220,18 @@ export default class Engine {
         loader.setDRACOLoader(dracoLoader)
 
         for (const name in assets) {
-            await new Promise(resolve => {
+            res[name] = await new Promise(resolve => {
                 loader.load(baseUrl + assets[name], gltf => {
                     let model = gltf.scene
-
                     model.name = name
-                    model.visible = visible
                     model.userData.animClips = gltf.animations
 
-                    SceneObjects.traverseMeshes(model, mesh => {
-                        mesh.frustumCulled = false
-
-                        if (mesh instanceof SkinnedMesh) {
-                            let matrix = new Matrix4()
-                                .makeTranslation(0, -50, 0)
-                                .scale(new Vector3(200, 150, 100))
-
-                            mesh.geometry.boundingBox.applyMatrix4(matrix)
-                            mesh.geometry.boundingSphere.applyMatrix4(matrix)
-                        }
-                    })
-
-                    this.graphics.scene.add(model)
-
-                    resolve()
+                    resolve(model)
                 })
             })
         }
+
+        return res
     }
 
     runAnimation(sceneObj, animName) {

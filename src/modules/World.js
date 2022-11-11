@@ -1,3 +1,5 @@
+const ENVIRON_OBJECT = 0
+
 export default class World {
 
     #tiles
@@ -26,6 +28,14 @@ export default class World {
         return coord
     }
 
+    setEnviron({ coord, size = { x: 1, y: 1} }) {
+        for (let x = 0; x < size.x; x++) {
+            for (let y = 0; y < size.y; y++) {
+                this.#tiles[coord.x + x][coord.y + y].dweller = ENVIRON_OBJECT
+            }
+        }
+    }
+
     setDweller(coord, dweller = null) {
         this.#tiles[coord.x][coord.y].dweller = dweller
     }
@@ -45,7 +55,9 @@ export default class World {
     }
 
     update() {
-        this.travelTiles(tile => tile.dweller?.update())
+        this.travelTiles(tile => {
+            if (tile.dweller !== ENVIRON_OBJECT) tile.dweller?.update()
+        })
     }
 
     travelTiles(cbAction) {
@@ -59,7 +71,8 @@ export default class World {
 
         this.travelTiles((tile, coord) => {
             const dweller = tile.dweller
-            if (!dweller || permitClassNames.includes(dweller.constructor.name)) res.push(coord)
+            let isEmptyTile = (dweller !== ENVIRON_OBJECT) && (!dweller || permitClassNames.includes(dweller.constructor.name))
+            if (isEmptyTile) res.push(coord)
         })
 
         return res

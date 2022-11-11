@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, Group, Vector3, AxesHelper, GridHelper, CameraHelper, AmbientLight, DirectionalLight, DirectionalLightHelper, Mesh, RingGeometry, MeshPhongMaterial, SkinnedMesh } from 'three'
+import { Scene, PerspectiveCamera, Group, Vector3, Matrix4, AxesHelper, GridHelper, CameraHelper, AmbientLight, DirectionalLight, DirectionalLightHelper, Mesh, RingGeometry, MeshPhongMaterial, SkinnedMesh } from 'three'
 import { clone as totalClone } from './SkeletonUtils.js'
 
 export default class SceneObjects {
@@ -104,25 +104,36 @@ export default class SceneObjects {
 
     // ROUTINES
 
-    static instance({ protoObj, position, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, userData = {} }) {
-        let obj = totalClone(protoObj)
+    static instance({ srcObj, position, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
+        let obj = totalClone(srcObj)
 
         obj.position.copy(this.Vector3From(position))
         obj.rotation.setFromVector3(this.Vector3From(rotation))
         obj.scale.copy(this.Vector3From(scale))
 
-        obj.name = protoObj.name + '_instance'
+        obj.name = srcObj.name + '_instance'
         obj.visible = true
         obj.userData = { ...obj.userData, ...userData }
 
         this.traverseMeshes(obj, mesh => {
+            mesh.frustumCulled = false
             mesh.castShadow = shadow.cast
             mesh.receiveShadow = shadow.receive
 
             mesh.material = mesh.material.clone()
             mesh.userData.selectable = selectable
+
+            if (mesh instanceof SkinnedMesh) {
+                let matrix = new Matrix4()
+                    .makeTranslation(0, -50, 0)
+                    .scale(new Vector3(200, 150, 100))
+
+                mesh.geometry.boundingBox.applyMatrix4(matrix)
+                mesh.geometry.boundingSphere.applyMatrix4(matrix)
+            }
         })
 
+        if (parent) parent.add(obj)
         return obj
     }
 
