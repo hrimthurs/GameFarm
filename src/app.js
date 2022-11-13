@@ -87,6 +87,10 @@ export default class Application {
             sceneObj: assets.home
         })
 
+        this.#createFence({
+            sceneObj: assets.fence
+        })
+
         const dwellerClasses = { Corn, Chicken, Cow }
 
         for (const typeDweller in config.dwellers) {
@@ -103,7 +107,7 @@ export default class Application {
     }
 
     #createGround({ tile, coord, sceneObj }) {
-        const rotateFactor = [0, 1/2, 1, 3/2]
+        const rotateFactor = [0, 0.5, 1, 1.5]
 
         let model = SceneObjects.instance({
             sceneObj,
@@ -127,6 +131,84 @@ export default class Application {
         })
 
         this.world.setEnviron({ coord, size })
+    }
+
+    #createFence({ sceneObj }) {
+        const sizeX = config.world.sizeWorld.x - 1
+        const sizeY = config.world.sizeWorld.y - 1
+
+        const rotZ90 = { z: Math.PI * 0.5 }
+        const rotZ180 = { z: Math.PI }
+        const rotZ270 = { z: Math.PI * 1.5 }
+
+        const hideMid = ['mid_board_1', 'mid_board_2']
+        const hideRight = ['right_board_1', 'right_board_2']
+        const hideLeft = ['left_board_1', 'left_board_2']
+
+        const base = {
+            sceneObj,
+            selectable: false,
+            shadow: { cast: true, receive: true },
+            parent: this.engine.graphics.scene
+        }
+
+        for (let y = 1; y < sizeY; y++) {
+            SceneObjects.instance({
+                ...base,
+                position: this.world.calcTilePivot({ x: 0, y }),
+                hide: y === 2 ? [...hideMid, ...hideLeft] : hideMid
+            })
+            this.world.setEnviron({ coord: { x: 0, y } })
+
+            SceneObjects.instance({
+                ...base,
+                position: this.world.calcTilePivot({ x: sizeX, y }),
+                rotation: rotZ180,
+                hide: hideMid
+            })
+            this.world.setEnviron({ coord: { x: sizeX, y } })
+        }
+
+        for (let x = 1; x < sizeX; x++) {
+            SceneObjects.instance({
+                ...base,
+                position: this.world.calcTilePivot({ x, y: 0 }),
+                rotation: rotZ90,
+                hide: x === 2 ? [...hideMid, ...hideRight] : hideMid
+            })
+            this.world.setEnviron({ coord: { x, y: 0 } })
+
+            SceneObjects.instance({
+                ...base,
+                position: this.world.calcTilePivot({ x, y: sizeY }),
+                rotation: rotZ270,
+                hide: ['mid_board_1', 'mid_board_2']
+            })
+            this.world.setEnviron({ coord: { x, y: sizeY } })
+        }
+
+        SceneObjects.instance({
+            ...base,
+            position: this.world.calcTilePivot({ x: 0, y: sizeY }),
+            hide: hideRight
+        })
+        this.world.setEnviron({ coord: { x: 0, y: sizeY } })
+
+        SceneObjects.instance({
+            ...base,
+            position: this.world.calcTilePivot({ x: sizeX, y: sizeY }),
+            rotation: rotZ270,
+            hide: hideRight
+        })
+        this.world.setEnviron({ coord: { x: sizeX, y: sizeY } })
+
+        SceneObjects.instance({
+            ...base,
+            position: this.world.calcTilePivot({ x: sizeX, y: 0 }),
+            rotation: rotZ180,
+            hide: hideRight
+        })
+        this.world.setEnviron({ coord: { x: sizeX, y: 0 } })
     }
 
     #createDweller({ dwellerClass, amount, sceneObj, animation = null, options }) {

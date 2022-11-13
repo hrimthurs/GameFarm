@@ -72,17 +72,8 @@ export default class SceneObjects {
 
         if (options.shadow) {
             dirLight.castShadow = true
-            dirLight.shadow.normalBias = options.shadow.normalBias ?? 0
-
-            const setShadowCamera = options.shadow.camera
-            if (setShadowCamera) {
-                dirLight.shadow.camera.near = setShadowCamera.near ?? 0.5
-                dirLight.shadow.camera.far = setShadowCamera.far ?? 500
-                dirLight.shadow.camera.top = setShadowCamera.top ?? 5
-                dirLight.shadow.camera.right = setShadowCamera.right ?? 5
-                dirLight.shadow.camera.bottom = setShadowCamera.bottom ?? -5
-                dirLight.shadow.camera.left = setShadowCamera.left ?? -5
-            }
+            this.#setParams(dirLight.shadow, options.shadow, ['normalBias'])
+            this.#setParams(dirLight.shadow.camera, options.shadow.camera, ['near', 'far', 'top', 'right', 'bottom', 'left'])
         }
 
         parent = parent ?? options.parent
@@ -118,7 +109,7 @@ export default class SceneObjects {
 
     // ROUTINES
 
-    static instance({ sceneObj, position = {}, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {} }) {
+    static instance({ sceneObj, position = {}, rotation = {}, scale = 1, selectable = true, shadow = { cast: false, receive: false }, parent = null, userData = {}, hide = [] }) {
         let obj = totalClone(sceneObj)
         obj.visible = true
         obj.userData = { ...obj.userData, ...userData }
@@ -129,9 +120,11 @@ export default class SceneObjects {
         })
 
         this.traverseMeshes(obj, mesh => {
-            mesh.frustumCulled = false
-            mesh.castShadow = shadow.cast
-            mesh.receiveShadow = shadow.receive
+            this.#setParams(mesh, {
+                frustumCulled: false,
+                castShadow: shadow.cast,
+                receiveShadow: shadow.receive
+            })
 
             mesh.material = mesh.material.clone()
             mesh.userData.selectable = selectable
@@ -144,6 +137,11 @@ export default class SceneObjects {
                 mesh.geometry.boundingBox.applyMatrix4(matrix)
                 mesh.geometry.boundingSphere.applyMatrix4(matrix)
             }
+        })
+
+        hide.forEach(name => {
+            let subObj = obj.getObjectByName(name)
+            if (subObj) subObj.visible = false
         })
 
         if (parent) parent.add(obj)
@@ -173,6 +171,16 @@ export default class SceneObjects {
         parent.traverse(obj => {
             if ((obj instanceof SkinnedMesh) || (obj instanceof Mesh)) cbAction(obj)
         })
+    }
+
+    static #setParams(dstObj, srcObj, keys) {
+        const enumKeys = keys ?? Object.keys(srcObj)
+
+        for (const key of enumKeys) {
+            if ((key in dstObj) && (srcObj?.[key] != null)) {
+                dstObj[key] = srcObj[key]
+            }
+        }
     }
 
 }

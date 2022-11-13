@@ -15,7 +15,7 @@ export default {
                 fov: 40,
                 near: 0.1,
                 far: 100,
-                position: { x: 15, y: 8, z: 17 }
+                position: { x: 10, y: 18, z: 10 }
             }
         },
 
@@ -42,7 +42,8 @@ export default {
         corn: 'assets/corn.glb',
         chicken: 'assets/chicken.glb',
         cow: 'assets/cow.glb',
-        home: 'assets/home.glb'
+        home: 'assets/home.glb',
+        fence: 'assets/fence.glb'
     },
 
     indicator: {
@@ -54,7 +55,7 @@ export default {
     },
 
     world: {
-        sizeWorld: { x: 8, y: 8 },
+        sizeWorld: { x: 9, y: 9 },
         sizeTile: 2
     },
 
